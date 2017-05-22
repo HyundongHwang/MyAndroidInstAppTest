@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">myinstapp</string>
+    <string name="title_activity_my_base">MyBaseActivity</string>
+</resources>
