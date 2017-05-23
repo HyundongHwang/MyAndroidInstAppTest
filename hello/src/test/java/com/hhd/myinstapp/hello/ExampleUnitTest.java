@@ -1,4 +1,4 @@
-package com.hhd.myinstapp.hello;
+package com.hhd.myinstapp.Hello;
 
 import org.junit.Test;
 

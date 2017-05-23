@@ -2,7 +2,7 @@ apply plugin: 'com.android.feature'
 
 android {
     compileSdkVersion 25
-    buildToolsVersion '26.0.0-rc2'
+    buildToolsVersion "26.0.0 rc2"
     baseFeature true
     defaultConfig {
         minSdkVersion 23
@@ -19,6 +19,6 @@ android {
 }
 
 dependencies {
-    feature project(':hello')
+    feature project(':Hello')
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
 }

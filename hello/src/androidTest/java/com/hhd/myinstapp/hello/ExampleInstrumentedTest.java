@@ -1,4 +1,4 @@
-package com.hhd.myinstapp.hello;
+package com.hhd.myinstapp.Hello;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("com.hhd.myinstapp.hello.test", appContext.getPackageName());
+        assertEquals("com.hhd.myinstapp.Hello.test", appContext.getPackageName());
     }
 }
