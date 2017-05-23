@@ -45,6 +45,9 @@
 - 모듈 zip 파일은 4Mb 를 넘지 못한다.
     - 추가하는 리소스와 종속성 선정에 신중하지 않으면 금새 용량초과 될듯.
 - 푸시알림, 백그라운드 작업, 캘린더, 주소록, SMS수신후킹, SD카드 R/W, NFC 를 사용할 수 없음.
+- 현재 사용가능한 디바이스가 제약되어 있고 최소지원OS 버전도 높다.
+    - Nexus 5X, Nexus 6P, Pixel, Pixel XL, Galaxy S7
+    - Android 6.0 or higher.
 
 ## 사전요구사항
 - Android Studio 3.0 설치 
@@ -55,6 +58,8 @@
     - Android Build-Tools 26-rc2 이상 설치
     - Google Play Service 설치
     - Instance App Development SDJ 설치
+- 디바이스 준비
+    - Nexus 5X, Nexus 6P, Pixel, Pixel XL, Galaxy S7 running Android 6.0 or higher.
 
 ## 설정변경
 - build.gradle
@@ -69,7 +74,9 @@ android {
 - 나머지 설정들은 개발문서대로 따라서 진행함...
 
 ## 의견
-
+- `InstanceApp` 는 초기단계인 기술이라 아직 깊이 개입하여 개발하는데 실익이 적을듯
+    - 특히 디바이스, 최소실행 OS버전 제약이 크다.
+- 하지만 점차 환경이 개선될 것이라 믿기(?) 때문에 브랜드가 약하여 앱설치를 유도하기 어려웠던 개발사인 경우는 개선되어 가는 과정을 모니터링 해둘 필요가 있을것.
 
 ## 모든 빌드 결과 살펴보기
 - app-debug.apk
