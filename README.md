@@ -2,17 +2,25 @@
 
 - [MyAndroidInstAppTest](#myandroidinstapptest)
     - [프로젝트 개요](#프로젝트-개요)
+    - [playstore url](#playstore-url)
     - [`InstanceApp` 이란?](#instanceapp-이란)
     - [`InstanceApp` 장점](#instanceapp-장점)
     - [`InstanceApp` 단점, 제약사항](#instanceapp-단점-제약사항)
     - [사전요구사항](#사전요구사항)
-    - [설정변경](#설정변경)
     - [의견](#의견)
-    - [모든 빌드 결과 살펴보기](#모든-빌드-결과-살펴보기)
     - [모든 빌드 파일 보기](#모든-빌드-파일-보기)
-    - [zip 중에서 base apk 설치](#zip-중에서-base-apk-설치)
-    - [설치 확인](#설치-확인)
-    - [삭제](#삭제)
+    - [모든 빌드 결과 살펴보기](#모든-빌드-결과-살펴보기)
+    - [상세 개발 과정](#상세-개발-과정)
+        - [프로젝트 생성](#프로젝트-생성)
+        - [base 모듈 에 MyBaseActivity 추가](#base-모듈-에-mybaseactivity-추가)
+        - [hello 모듈 에 MainActivity 추가](#hello-모듈-에-mainactivity-추가)
+        - [base, hello모듈에 http, https 딥링크 인텐트 필터 연결](#base-hello모듈에-http-https-딥링크-인텐트-필터-연결)
+        - [각 모듈을 모두 코드사이닝](#각-모듈을-모두-코드사이닝)
+        - [base-release.apk와 hello-release.apk를 instantapp-release.zip 으로 압축](#base-releaseapk와-hello-releaseapk를-instantapp-releasezip-으로-압축)
+        - [playstore에 app-release.apk 업로드](#playstore에-app-releaseapk-업로드)
+        - [playstore에 instantapp-release.zip 업로드](#playstore에-instantapp-releasezip-업로드)
+    - [테스트 과정](#테스트-과정)
+        - [Galaxy S7 단말에서 `http://hhd.com/` `http://hhd.com/main` 으로 접근하여 InstantApp 실행](#galaxy-s7-단말에서-httphhdcom-httphhdcommain-으로-접근하여-instantapp-실행)
 
 <!-- /TOC -->
 
@@ -26,6 +34,9 @@
     - 개발자페이지
         - https://developer.android.com/topic/instant-apps/index.html
 - 이를 분석하기 위해 샘플프로젝트를 만들었다.
+
+## playstore url
+- https://play.google.com/store/apps/details?id=com.hhd.myinstapp
 
 ## `InstanceApp` 이란?
 - 명시적인 앱설치 없이 웹페이지 띄우듯 바로 앱의 작은 기능만 사용할 수 있는 솔루션
@@ -61,22 +72,24 @@
 - 디바이스 준비
     - Nexus 5X, Nexus 6P, Pixel, Pixel XL, Galaxy S7 running Android 6.0 or higher.
 
-## 설정변경
-- build.gradle
-
-```groovy
-android {
-    ...
-    buildToolsVersion '26.0.0-rc2'
-    ...
-```
-
-- 나머지 설정들은 개발문서대로 따라서 진행함...
-
 ## 의견
 - `InstanceApp` 는 초기단계인 기술이라 아직 깊이 개입하여 개발하는데 실익이 적을듯
     - 특히 디바이스, 최소실행 OS버전 제약이 크다.
 - 하지만 점차 환경이 개선될 것이라 믿기(?) 때문에 브랜드가 약하여 앱설치를 유도하기 어려웠던 개발사인 경우는 개선되어 가는 과정을 모니터링 해둘 필요가 있을것.
+
+## 모든 빌드 파일 보기
+
+```powershell
+PS C:\project\170523_MyAndroidInstAppTest> ls *.apk, *.zip -Recurse -Force | select FullName, Length
+
+FullName                                                                         Length
+--------                                                                         ------
+C:\project\170523_MyAndroidInstAppTest\app\build\outputs\apk\debug\app-debug.apk 169261
+C:\project\170523_MyAndroidInstAppTest\app\feature\release\base-release.apk      159809
+C:\project\170523_MyAndroidInstAppTest\app\feature\release\Hello-release.apk       4898
+C:\project\170523_MyAndroidInstAppTest\app\release\app-release.apk               161741
+C:\project\170523_MyAndroidInstAppTest\instantapp-release.zip                    156205
+```
 
 ## 모든 빌드 결과 살펴보기
 - app-debug.apk
@@ -84,8 +97,7 @@ android {
     - 일반적인 안드로이드 앱과 다를바 없다.
 - instantapp-release.zip 
     - 인스턴스앱 빌드
-    - base-release.apk, hello-release.apk 로 구성되어 있으며 playstore에 이렇게 묶어서 배포되는 것 같다.
-        - 테스트 못해봐서 정확히 모르겠음.
+    - base-release.apk, hello-release.apk 로 구성되어 있으며 playstore에 이렇게 묶어서 배포해야 함.
 - base-release.apk
     - MyAppActivity 가 포함된 기본 모듈
     - `https://hhd.com/app` 으로 오픈 가능
@@ -93,40 +105,109 @@ android {
     - HelloActivity 가 포함된 기능 모듈
     - `https://hhd.com/hello` 으로 오픈 가능
 
+## 상세 개발 과정
 
-## 모든 빌드 파일 보기
+### 프로젝트 생성
+- `Include Android Instant App Support` 체크
 
-```powershell
-PS C:\project\170522_MyAndroidInstAppTest> ls *.apk, *.zip -Recurse -Force | select FullName, Length
+### base 모듈 에 MyBaseActivity 추가
+- \base\src\main\AndroidManifest.xml
 
-FullName                                                                            Length
---------                                                                            ------
-C:\project\170522_MyAndroidInstAppTest\app\build\outputs\apk\debug\app-debug.apk    170015
-C:\project\170522_MyAndroidInstAppTest\instantapp\feature\release\base-release.apk  158796
-C:\project\170522_MyAndroidInstAppTest\instantapp\feature\release\hello-release.apk   5801
-C:\project\170522_MyAndroidInstAppTest\instantapp\release\instantapp-release.zip      4577
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.hhd.myinstapp">
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+
+        <activity android:name=".MyBaseActivity">
+            <intent-filter android:order="1"
+                android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.BROWSABLE" />
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data
+                    android:host="hhd.com"
+                    android:pathPattern="/"
+                    android:scheme="https" />
+
+                <data
+                    android:host="hhd.com"
+                    android:pathPattern="/"
+                    android:scheme="http" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>
 ```
 
-## zip 중에서 base apk 설치
+### hello 모듈 에 MainActivity 추가
+- \Hello\src\main\AndroidManifest.xml
 
-```powershell
-PS C:\project\170522_MyAndroidInstAppTest> adb install C:\project\170522_MyAndroidInstAppTest\instantapp\feature\release\base-release.apk
-C:\project\170522_MyAndroidInstAppTest\instantapp\feature\release\base-release.apk: 1 file pushed. 1.3 MB/s (158796 bytes in 0.117s)
-        pkg: /data/local/tmp/base-release.apk
-Success
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.hhd.myinstapp.Hello">
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <activity android:name=".MainActivity">
+            <intent-filter
+                android:autoVerify="true"
+                android:order="1">
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.BROWSABLE" />
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data
+                    android:host="hhd.com"
+                    android:pathPattern="/main"
+                    android:scheme="https" />
+
+                <data
+                    android:host="hhd.com"
+                    android:pathPattern="/main"
+                    android:scheme="http" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>
 ```
 
-## 설치 확인
+### base, hello모듈에 http, https 딥링크 인텐트 필터 연결
+
+### 각 모듈을 모두 코드사이닝
+
+### base-release.apk와 hello-release.apk를 instantapp-release.zip 으로 압축
 
 ```powershell
-PS C:\project\170522_MyAndroidInstAppTest> adb shell pm list packages | sls hhd
-
-package:com.hhd.myinstapp
+PS C:\project\170523_MyAndroidInstAppTest> zip C:\project\170523_MyAndroidInstAppTest\app\feature\release\base-release.apk, C:\project\170523_MyAndroidInstAppTest\app\feature\release\Hello-release.apk -DestinationPath instantapp-release.zip -Force
 ```
 
-## 삭제
+### playstore에 app-release.apk 업로드
 
-```powershell
-PS C:\project\170522_MyAndroidInstAppTest> adb uninstall com.hhd.myinstapp
-Success
-```
+### playstore에 instantapp-release.zip 업로드
+
+## 테스트 과정
+
+### Galaxy S7 단말에서 `http://hhd.com/` `http://hhd.com/main` 으로 접근하여 InstantApp 실행
