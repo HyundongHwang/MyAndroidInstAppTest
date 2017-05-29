@@ -34,10 +34,10 @@
 - 이를 분석하기 위해 샘플프로젝트를 만들었다.
 
 ## 데모
-1. instantapp 기능이 지원되는 디바이스 준비
+1. `instantapp` 기능이 지원되는 디바이스 준비
     - samsung galaxy s7, s8
     - google pixel
-2. `` 실행
+2. `instantapp` 실행
     - http://hhdandroidinstapptest.azurewebsites.net/ 실행
     - 하지만 원인은 모르지만 galaxy s7, s8에서 테스트 해 본결과 실행이 안됨. ㅠㅠ
 - 참고
