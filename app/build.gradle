@@ -6,13 +6,12 @@ android {
 
 
     defaultConfig {
-        applicationId "com.hhd.myinstapp"
+        applicationId "com.hhd.myinstapp3"
         minSdkVersion 23
         targetSdkVersion 25
-        versionCode 1
-        versionName "1.0"
-
-
+        versionCode 2
+        versionName "2.0"
+        vectorDrawables.useSupportLibrary = true
     }
     buildTypes {
         release {
@@ -23,7 +22,6 @@ android {
 }
 
 dependencies {
-    implementation project(':base')
-    implementation project(':Hello')
-    compile 'com.android.support.constraint:constraint-layout:1.0.2'
+    implementation project(':myfeature')
+    //implementation project(':base')
 }
