@@ -400,7 +400,7 @@
 
 ### playstore console 에 app, instantapp.zip 업로드
 - playstore console 을 이용하여 app-release.apk, instantapp.zip 을 업로드함.
-    - [](http://s30.postimg.org/wbs6nhurl/screenshot_2017_05_29_at_09_44_53.png)
+    - ![](http://s30.postimg.org/wbs6nhurl/screenshot_2017_05_29_at_09_44_53.png)
     - https://play.google.com/store/apps/details?id=com.hhd.myinstapp3
 
 
